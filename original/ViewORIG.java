@@ -42,11 +42,7 @@ class ViewORIG extends JFrame implements ActionListener {
 			// Draw the view
 			drawMap(g);
 			controller.agent.drawPlan(g, model);
-			g.drawImage(currentImg, (int)model.getX() - 8, (int)model.getY() - 8, null);
-			g.drawImage(destImg, (int)model.getDestX() - 8, (int)model.getDestY()- 8, null);
-			if(model.getX() == model.getDestX() && model.getY() == model.getDestY())
-				g.drawImage(foundImg, (int)model.getX() -8, (int)model.getY() - 8, null);
-			
+			drawMarkers(g);
 		}
 		
 		private void drawMap(Graphics g) {
@@ -71,6 +67,13 @@ class ViewORIG extends JFrame implements ActionListener {
 					posRed -= 4;
 				}
 			}
+		}
+		
+		private void drawMarkers(Graphics g) {
+			g.drawImage(currentImg, (int)model.getX() - 8, (int)model.getY() - 8, null);
+			g.drawImage(destImg, (int)model.getDestX() - 8, (int)model.getDestY()- 8, null);
+			if(model.getX() == model.getDestX() && model.getY() == model.getDestY())
+				g.drawImage(foundImg, (int)model.getX() -8, (int)model.getY() - 8, null);
 		}
 		
 		public void loadImages() throws IOException {
