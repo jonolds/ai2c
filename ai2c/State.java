@@ -17,11 +17,8 @@ class State {
 		pos = new int[]{x, y};
 	}
 
-	State(State parent, int[] pos) {
-		this.parent = parent;
-		this.pos = new int[2];
-		this.pos[0] = pos[0];
-		this.pos[1] = pos[1];
+	State(State _parent, int[] pos) {
+		this(0.0, _parent, pos[0], pos[1]);
 	}
 
 	void printAll() {
