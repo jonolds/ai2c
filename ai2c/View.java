@@ -84,6 +84,7 @@ public class View extends JFrame implements ActionListener {
 			drawTerrain(g);
 			drawGridLines(g);
 			drawSprites(g);
+			
 			controller.agent.drawPlan(g, model);
 		}
 		

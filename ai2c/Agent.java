@@ -13,15 +13,14 @@ class Agent {
 	public Vector<int[]> path = new Vector<int[]>(); //elem 0 is goal. path.get(path.size()-1) is init pos
 	int[] bigGoal = new int[] {100, 100};
 	PriorityQueue<State> frontier = new PriorityQueue<>();
-	Image bigGoalGrn, atBigGoalNeonGrn, curPosPur;
+	Image bigGoalGrn, curPosPur;
 
 	void drawPlan(Graphics g, Model m) {
 		drawDots(g, m);
 		drawFrontier(g);
 		drawPath(g, m);
 		
-		if(path.size() > 0 && m.getX() == m.getDestX() && m.getY() == m.getDestY())
-			m.setDest(path.get(path.size()-1)[0], path.get(path.size()-1)[1]);
+	
 	}
 
 	void update(Model m) throws IOException {
@@ -29,6 +28,12 @@ class Agent {
 		Planner.PathAndFrontier combo = (new Planner(m, bigGoal[0], bigGoal[1])).ucs();
 		path = combo.path;
 		frontier = combo.frontier;
+		if(m.getX() == m.getDestX() && m.getY() == m.getDestY()) {
+			if(path.size() > 0)
+				m.setDest(path.get(path.size()-1)[0], path.get(path.size()-1)[1]);
+			else if(isWithinTen(bigGoal[0], bigGoal[1], (int)m.getX(), (int)m.getY()))
+				m.setDest((float)bigGoal[0], (float)bigGoal[1]);
+		}
 		while(true) {
 			MouseEvent e = c.nextMouseEvent();
 			if(e == null)
@@ -37,11 +42,15 @@ class Agent {
 		}
 	}
 	
+	boolean isWithinTen(int x1, int y1, int x2, int y2) {
+		return Math.abs(x1 - x2) < 10 && Math.abs(y1 - y2) < 10;
+	}
+	
 	void drawDots(Graphics g, Model m) {
 		g.drawImage(bigGoalGrn, bigGoal[0]-3, (int)bigGoal[1] -3, null);
+//		System.out.println("bigGoalGrn: " + (bigGoal[0]-3) + "," + ((int)bigGoal[1] -3));
 		g.drawImage(curPosPur, (int)m.getX() - 3, (int)m.getY() - 3, null);
-		if(m.getX() == m.getDestX() && m.getY() == m.getDestY())
-			g.drawImage(atBigGoalNeonGrn, (int)m.getDestX()-3, (int)m.getDestY() -3, null);
+//		System.out.println("curPosPur: " + ((int)m.getX() - 3) + "," + ((int)m.getY() - 3));
 	}
 	
 	void drawPath(Graphics g, Model m) {
@@ -72,7 +81,6 @@ class Agent {
 	Agent() throws IOException {
 		bigGoalGrn = ImageIO.read(new File("grnDot.png"));
 		curPosPur = ImageIO.read(new File("purDot.png"));
-		atBigGoalNeonGrn = ImageIO.read(new File("neonGrnDot.png"));
 	}
 
 }

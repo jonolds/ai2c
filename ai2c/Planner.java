@@ -79,17 +79,12 @@ class Planner {
 	}
 	class PosComp implements Comparator<State> {
 		public int compare(State a, State b) {
-			for(int i = 0; i < 2; i++) {
+			for(int i = 0; i < 2; i++)
 				if(a.pos[i] < b.pos[i])
 					return -1;
 				else if(a.pos[i] > b.pos[i])
 					return 1;
-			}
 			return 0;
 		}
-	}
-
-	void print(int[] s) {
-		System.out.println("[" + s[0] + "," + s[1] + "]");
 	}
 }
