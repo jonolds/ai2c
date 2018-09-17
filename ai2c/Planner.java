@@ -8,8 +8,6 @@ import java.util.Vector;
 class Planner extends Agent{
 	Model m;
 	State start, goal;
-	TreeSet<State> visited;
-	PriorityQueue<State> frontier;
 	final int[] act = new int[] {10, -10, 10, 0, 10, 10, 0, 10, 0, -10, -10, -10, -10, 0, -10, 10};
 	
 	Planner(Model m, int destX, int destY) throws IOException {
@@ -17,23 +15,14 @@ class Planner extends Agent{
 		this.start = new State((int)m.getX(), (int)m.getY());
 		this.goal = new State(roundTen(destX), roundTen(destY));
 	}
-	
-	public class Combo {
-		Vector<int[]> path;
-		PriorityQueue<State> frontier;
-		Combo(Vector<int[]> path, PriorityQueue<State> frontier) {
-			this.path = path; this.frontier = frontier;
-		}
-	}
 
-	Combo ucs() {
-		(frontier = new PriorityQueue<>(new CostComp())).add(start);
-		(visited = new TreeSet<>(new PosComp())).add(start);
+	PathAndFrontier ucs() {
+		PriorityQueue<State> frontier = new PriorityQueue<State>(new CostComp()) {{add(start);}};
+		TreeSet<State> visited = new TreeSet<State>(new PosComp()) {{add(start);}};
 		State best = null;
 
 		while(!frontier.isEmpty()) {
 			State s = frontier.poll();
-			//print(s.pos); System.out.print("    "); print(goal.pos);
 			if(new PosComp().compare(s, goal) == 0) if(best == null || best.cost > s.cost) {
 				best = s;
 				break;
@@ -60,28 +49,27 @@ class Planner extends Agent{
 				}
 			}
 		}
-		System.out.println(frontier.size() + " planner front size");
-		return new Combo(state2moves(best), frontier);
+		return new PathAndFrontier(state2moves(best), frontier);
 	}
 
-//	public Vector<int[]> state2moves(State state) {
-//		State s = state;
-//		Vector<int[]> moves = new Vector<>();
-//		while(s != null) {
-//			moves.add(new int[]{s.pos[0], s.pos[1]});
-//			s = s.parent;
-//		}
-//		return moves;
-//	}
-	
-	public Vector<int[]> state2moves(State state) {
-		State s = state;
+	public Vector<int[]> state2moves(State s) {
 		Vector<int[]> moves = new Vector<>();
-		while(s != null) {
-			moves.add(new int[]{s.pos[0], s.pos[1]});
-			s = s.parent;
-		}
+		if(s != null)
+			while(s.parent != null) {
+				moves.add(new int[]{s.pos[0], s.pos[1]});
+				s = s.parent;
+			}
+//		for(int[] i : moves)
+//		System.out.println(i[0] + "," + i[1]);
 		return moves;
+	}
+	
+	public class PathAndFrontier {
+		Vector<int[]> path;
+		PriorityQueue<State> frontier;
+		PathAndFrontier(Vector<int[]> path, PriorityQueue<State> frontier) {
+			this.path = path; this.frontier = frontier;
+		}
 	}
 	
 	public float getDistance(int x1, int y1, int x2, int y2) {

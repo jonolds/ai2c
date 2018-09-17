@@ -11,65 +11,68 @@ import javax.imageio.ImageIO;
 
 class Agent {
 	boolean clicked = false;
-	public Vector<int[]> path = new Vector<int[]>();
+	public Vector<int[]> path = new Vector<int[]>(); //elem 0 is goal. path.get(path.size()-1) is init pos
 	int[] bigGoal = new int[] {100, 100};
-	Planner.Combo combo;
+	Planner.PathAndFrontier combo;
 	PriorityQueue<State> frontier = new PriorityQueue<>();
-	Image finalDest;
-	
-	Agent() throws IOException {
-		finalDest = ImageIO.read(new File("grnX.png"));
-	}
-	
-
+	Image bigGoalGrn, atBigGoalNeonGrn, curPosPur;
 
 	void drawPlan(Graphics g, Model m) {
-		g.drawImage(finalDest, bigGoal[0]-8, (int)bigGoal[1] -8, null);
+		drawDots(g, m);
+		drawFrontier(g);
+		drawPath(g, m);
 		
-		g.setColor(Color.pink);
-		g.fillOval(97, 97, 6, 6);
-		
-		//draw frontier
-		g.setColor(Color.YELLOW);
-		for(State s : frontier)
-			g.fillOval(s.pos[0], s.pos[1], 10, 10);
-		
-		//draw path
-		if(!path.isEmpty()) {
-			g.setColor(Color.white);
-			int[] last = bigGoal;
-			for(int i = 0; i < path.size(); i++) {
-				if(last == null)
-					last = new int[] {(int)m.getDestX(), (int)m.getDestY()};
-				g.drawLine(last[0], last[1], path.get(i)[0], path.get(i)[1]);
-				last = new int[] {path.get(i)[0], path.get(i)[1]};
-			}
+		if(path.size() > 0 && m.getX() == m.getDestX() && m.getY() == m.getDestY())
+				m.setDest(path.get(path.size()-1)[0], path.get(path.size()-1)[1]);
+//		else if(path.size() == 1)
+//			m.setDest(path.get(path.size()-1)[0], path.get(path.size()-1)[1]);
 
-			path.removeElementAt(path.size()-1);
-		}
-		
-		
-		if(path.size() > 1)
-			m.setDest(path.get(path.size()-2)[0], path.get(path.size()-2)[1]);
-		else if(path.size() == 1)
-			m.setDest(path.get(path.size()-1)[0], path.get(path.size()-1)[1]);
-		else
-			m.setDest(bigGoal[0], bigGoal[1]);
-			
 	}
 
 	void update(Model m) throws IOException {
 		Controller c = m.getController();
+		combo = (new Planner(m, bigGoal[0], bigGoal[1])).ucs();
+		path = combo.path;
+		frontier = combo.frontier;
 		while(true) {
 			MouseEvent e = c.nextMouseEvent();
 			if(e == null)
 				break;
-			combo = (new Planner(m, e.getX(), e.getY())).ucs();
-			path = combo.path;
-			frontier = combo.frontier;
+			
 			bigGoal = new int[] {e.getX(), e.getY()};
-
+//			combo = (new Planner(m, bigGoal[0], bigGoal[1])).ucs();
+//			path = combo.path;
+//			frontier = combo.frontier;
+			
 		}
+	}
+	
+	void drawDots(Graphics g, Model m) {
+		g.drawImage(bigGoalGrn, bigGoal[0]-3, (int)bigGoal[1] -3, null);
+		g.drawImage(curPosPur, (int)m.getX() - 3, (int)m.getY() - 3, null);
+		if(m.getX() == m.getDestX() && m.getY() == m.getDestY())
+			g.drawImage(atBigGoalNeonGrn, (int)m.getDestX()-3, (int)m.getDestY() -3, null);
+	}
+	
+	void drawPath(Graphics g, Model m) {
+			g.setColor(Color.white);
+			int[] last = bigGoal;
+//			System.out.println("last: " + last[0] + "," + last[1]);
+			for(int i = 0; i < path.size(); i++) {
+//				System.out.println("i:" + i + "  drawing from: " + last[0] + "," + last[1] + "  to " + path.get(i)[0] + "," + path.get(i)[1]);
+				g.drawLine(last[0], last[1], path.get(i)[0], path.get(i)[1]);
+				
+				last = new int[] {path.get(i)[0], path.get(i)[1]};
+			}
+//			System.out.println("ENDING last: " + last[0] + "," + last[1]);
+			if(!path.isEmpty())
+				g.drawLine((int)m.getX(), (int)m.getY(), path.get(path.size()-1)[0], path.get(path.size()-1)[1]);
+	}
+	
+	void drawFrontier(Graphics g) {
+		g.setColor(Color.YELLOW);
+		for(State s : frontier)
+			g.fillOval(s.pos[0], s.pos[1], 10, 10);
 	}
 
 	int roundTen(int s) {
@@ -78,6 +81,12 @@ class Agent {
 	
 	public static void main(String[] args) throws Exception {
 		Controller.playGame();
+	}
+	
+	Agent() throws IOException {
+		bigGoalGrn = ImageIO.read(new File("grnDot.png"));
+		curPosPur = ImageIO.read(new File("purDot.png"));
+		atBigGoalNeonGrn = ImageIO.read(new File("neonGrnDot.png"));
 	}
 
 }

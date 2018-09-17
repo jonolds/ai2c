@@ -33,12 +33,11 @@ public class View extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent evt) { repaint(); }// indirectly calls MyPanel.paintComponent
 
 	class MyPanel extends JPanel {
-		Image image_robot, redX, yelX;
+		Image image_robot, redDot;
 
 		MyPanel() throws Exception {
 			image_robot = ImageIO.read(new File("robot_blue.png"));
-			redX = ImageIO.read(new File("redX.png"));
-			yelX = ImageIO.read(new File("yelX.png"));
+			redDot = ImageIO.read(new File("redDot.png"));
 		}
 
 		void drawTerrain(Graphics g) {
@@ -69,8 +68,8 @@ public class View extends JFrame implements ActionListener {
 			ArrayList<Model.Sprite> sprites = model.getSprites();
 			for(int i = 0; i < sprites.size(); i++) {
 				Model.Sprite s = sprites.get(i);
-				g.drawImage(redX, (int)s.destX - 8, (int)s.destY -8, null);
-				g.drawImage(yelX/*image_robot*/, (int)s.x - 8/*12*/, (int)s.y - 8/*32*/, null);
+				g.drawImage(redDot, (int)s.destX - 3, (int)s.destY - 3, null);
+			//	g.drawImage(image_robot, (int)s.x - 12, (int)s.y - 32, null);
 			}
 		}
 
@@ -83,12 +82,13 @@ public class View extends JFrame implements ActionListener {
 				e.printStackTrace();
 			} // Close this window
 			drawTerrain(g);
+			drawGridLines(g);
 			drawSprites(g);
 			controller.agent.drawPlan(g, model);
 		}
 		
-		void drawGridLines(Graphics g, Model m) {
-			int squareLen = 100; 
+		void drawGridLines(Graphics g) {
+			int squareLen = 10; 
 			g.setColor(Color.lightGray);
 			for(int i = 0; i < g.getClipBounds().width; i+=squareLen)
 				g.drawLine(i, 0, i, g.getClipBounds().height);
