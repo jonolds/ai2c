@@ -10,10 +10,8 @@ import java.util.Vector;
 import javax.imageio.ImageIO;
 
 class Agent {
-	boolean clicked = false;
 	public Vector<int[]> path = new Vector<int[]>(); //elem 0 is goal. path.get(path.size()-1) is init pos
 	int[] bigGoal = new int[] {100, 100};
-	Planner.PathAndFrontier combo;
 	PriorityQueue<State> frontier = new PriorityQueue<>();
 	Image bigGoalGrn, atBigGoalNeonGrn, curPosPur;
 
@@ -23,27 +21,19 @@ class Agent {
 		drawPath(g, m);
 		
 		if(path.size() > 0 && m.getX() == m.getDestX() && m.getY() == m.getDestY())
-				m.setDest(path.get(path.size()-1)[0], path.get(path.size()-1)[1]);
-//		else if(path.size() == 1)
-//			m.setDest(path.get(path.size()-1)[0], path.get(path.size()-1)[1]);
-
+			m.setDest(path.get(path.size()-1)[0], path.get(path.size()-1)[1]);
 	}
 
 	void update(Model m) throws IOException {
 		Controller c = m.getController();
-		combo = (new Planner(m, bigGoal[0], bigGoal[1])).ucs();
+		Planner.PathAndFrontier combo = (new Planner(m, bigGoal[0], bigGoal[1])).ucs();
 		path = combo.path;
 		frontier = combo.frontier;
 		while(true) {
 			MouseEvent e = c.nextMouseEvent();
 			if(e == null)
 				break;
-			
 			bigGoal = new int[] {e.getX(), e.getY()};
-//			combo = (new Planner(m, bigGoal[0], bigGoal[1])).ucs();
-//			path = combo.path;
-//			frontier = combo.frontier;
-			
 		}
 	}
 	
@@ -57,14 +47,10 @@ class Agent {
 	void drawPath(Graphics g, Model m) {
 			g.setColor(Color.white);
 			int[] last = bigGoal;
-//			System.out.println("last: " + last[0] + "," + last[1]);
 			for(int i = 0; i < path.size(); i++) {
-//				System.out.println("i:" + i + "  drawing from: " + last[0] + "," + last[1] + "  to " + path.get(i)[0] + "," + path.get(i)[1]);
 				g.drawLine(last[0], last[1], path.get(i)[0], path.get(i)[1]);
-				
 				last = new int[] {path.get(i)[0], path.get(i)[1]};
 			}
-//			System.out.println("ENDING last: " + last[0] + "," + last[1]);
 			if(!path.isEmpty())
 				g.drawLine((int)m.getX(), (int)m.getY(), path.get(path.size()-1)[0], path.get(path.size()-1)[1]);
 	}

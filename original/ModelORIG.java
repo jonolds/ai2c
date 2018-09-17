@@ -18,8 +18,12 @@ class ModelORIG {
 	}
 
 	float getSpeed(float x, float y) {	// 0 <= x < MAP_WIDTH; 0 <= y < MAP_HEIGHT.
-			int xx = (int)(x * 0.1f); int yy = (int)(y * 0.1f);
-			if(xx >= 60) { xx = 119 - xx; yy = 59 - yy; }
+			int xx = (int)(x * 0.1f); 
+			int yy = (int)(y * 0.1f);
+			if(xx >= 60) { 
+				xx = 119 - xx; 
+				yy = 59 - yy; 
+				}
 			int pos = 4 * (60 * yy + xx);
 			return Math.max(0.2f, Math.min(3.5f, -0.01f * (map[pos + 1] & 0xff) + 0.02f * (map[pos + 3] & 0xff)));
 	}

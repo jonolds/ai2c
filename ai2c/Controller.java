@@ -42,7 +42,6 @@ class Controller implements MouseListener {
 	//	System.out.println(e.getX() + "," + e.getY() + "   " + (100 * model.getTravelSpeed(e.getX(), e.getY())));
 		if(e.getY() < 600) {
 			mouseEvents.add(e);
-			agent.clicked = true;
 			//agent.mousePos = new int[]{e.getX(), e.getY()};
 			if(mouseEvents.size() > 20) // discard events if the queue gets big
 				mouseEvents.remove();

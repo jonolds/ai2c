@@ -8,6 +8,9 @@ class State {
 	State(int x, int y) {
 		pos = new int[]{x, y};
 	}
+	State(int[] pos) { 
+		this(pos[0], pos[1]);
+	}
 	State(double cost, State parent) {
 		this.cost = cost;
 		this.parent = parent;
@@ -15,6 +18,10 @@ class State {
 	State(double cost, State parent, int x, int y) {
 		this(cost, parent);
 		pos = new int[]{x, y};
+	}
+	State(double cost, State parent, int[] pos) {
+		this(cost, parent);
+		this.pos = pos;
 	}
 	State(State _parent, int[] pos) {
 		this(0.0, _parent, pos[0], pos[1]);

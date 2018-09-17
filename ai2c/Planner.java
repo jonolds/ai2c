@@ -5,35 +5,29 @@ import java.util.PriorityQueue;
 import java.util.TreeSet;
 import java.util.Vector;
 
-class Planner extends Agent{
+class Planner {
 	Model m;
-	State start, goal;
-	final int[] act = new int[] {10, -10, 10, 0, 10, 10, 0, 10, 0, -10, -10, -10, -10, 0, -10, 10};
+	int[] startPos, goalPos, act = new int[] {10,-10, 10,0, 10,10, 0,10, 0,-10, -10,-10, -10,0, -10,10};
 	
 	Planner(Model m, int destX, int destY) throws IOException {
 		this.m = m;
-		this.start = new State((int)m.getX(), (int)m.getY());
-		this.goal = new State(roundTen(destX), roundTen(destY));
+		this.startPos = new int[] {(int)m.getX(), (int)m.getY()};
+		this.goalPos = new int[] {destX, destY};
 	}
 
 	PathAndFrontier ucs() {
-		PriorityQueue<State> frontier = new PriorityQueue<State>(new CostComp()) {{add(start);}};
-		TreeSet<State> visited = new TreeSet<State>(new PosComp()) {{add(start);}};
-		State best = null;
-
+		PriorityQueue<State> frontier = new PriorityQueue<State>(new CostComp()) {{add(new State(0.0, null, startPos));}};
+		TreeSet<State> visited = new TreeSet<State>(new PosComp()) {{add(new State(0.0, null, startPos));}};
 		while(!frontier.isEmpty()) {
 			State s = frontier.poll();
-			if(new PosComp().compare(s, goal) == 0) if(best == null || best.cost > s.cost) {
-				best = s;
-				break;
-			}
-					
+			if(isWithinTen(s))
+				return new PathAndFrontier(state2moves(s), frontier);
 			for(int i = 0; i < 16; i+=2) {
 				int[] newPos = new int[] {s.pos[0] + act[i], s.pos[1] + act[i+1]};
 				if(newPos[0] >= 0 && newPos[0] < 1200 && newPos[1] >= 0 && newPos[1] < 600) {
-					float speed = m.getTravelSpeed((float)(s.pos[0] + newPos[0])/2, (float)(s.pos[1] + newPos[1])/2);
+					float speed = m.getTravelSpeed((float)newPos[0], (float)newPos[1]);
 					double actCost = this.getDistance(s.pos[0], s.pos[1], newPos[0], newPos[1])/speed;
-					State newChild = new State(actCost, s, newPos[0], newPos[1]);
+					State newChild = new State(actCost, s, newPos);
 					if(visited.contains(newChild)) {
 						State oldChild = visited.floor(newChild);
 						if(oldChild != null) if (s.cost + actCost < oldChild.cost) {
@@ -42,14 +36,18 @@ class Planner extends Agent{
 						}
 					}
 					else {
-						newChild.cost = s.cost + actCost;
+						newChild.cost += s.cost;
 						frontier.add(newChild);
 						visited.add(newChild);
 					}
 				}
 			}
 		}
-		return new PathAndFrontier(state2moves(best), frontier);
+		return null;
+	}
+	
+	boolean isWithinTen(State s) {
+		return Math.abs(s.pos[0] - goalPos[0]) < 10 && Math.abs(s.pos[1] - goalPos[1]) < 10;
 	}
 
 	public Vector<int[]> state2moves(State s) {
@@ -59,8 +57,6 @@ class Planner extends Agent{
 				moves.add(new int[]{s.pos[0], s.pos[1]});
 				s = s.parent;
 			}
-//		for(int[] i : moves)
-//		System.out.println(i[0] + "," + i[1]);
 		return moves;
 	}
 	
@@ -72,8 +68,8 @@ class Planner extends Agent{
 		}
 	}
 	
-	public float getDistance(int x1, int y1, int x2, int y2) {
-		return (float)Math.sqrt((float)Math.pow(x2 - x1, 2) + (float)Math.pow(y2-y1, 2));
+	public float getDistance(float x1, float y1, float x2, float y2) {
+		return (float)Math.sqrt(Math.pow(x2-x1, 2) + (float)Math.pow(y2-y1, 2));
 	}
 	
 	class CostComp implements Comparator<State> {
@@ -81,7 +77,6 @@ class Planner extends Agent{
 			return Double.compare(a.cost, b.cost);
 		}
 	}
-	
 	class PosComp implements Comparator<State> {
 		public int compare(State a, State b) {
 			for(int i = 0; i < 2; i++) {
