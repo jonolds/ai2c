@@ -20,12 +20,10 @@ class Agent {
 		g.setColor(Color.pink);
 		g.fillOval(97, 97, 6, 6);
 		
-		
 		//draw frontier
 		g.setColor(Color.YELLOW);
 		for(State s : frontier)
 			g.fillOval(s.pos[0], s.pos[1], 10, 10);
-		
 		
 		//draw path
 		if(!path.isEmpty()) {
@@ -37,10 +35,13 @@ class Agent {
 				g.drawLine(last[0], last[1], path.get(i)[0], path.get(i)[1]);
 				last = new int[] {path.get(i)[0], path.get(i)[1]};
 			}
-			if(path.size() > 1)
-				m.setDest(path.get(path.size()-2)[0], path.get(path.size()-2)[1]);
+
 			path.removeElementAt(path.size()-1);
 		}
+		
+		
+		if(path.size() > 1)
+			m.setDest(path.get(path.size()-2)[0], path.get(path.size()-2)[1]);
 	}
 
 	void update(Model m) {
