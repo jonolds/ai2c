@@ -17,7 +17,7 @@ class Planner extends Agent{
 		this.goal = new State(roundTen(destX), roundTen(destY));
 	}
 
-	Vector<Integer[]> ucs() {
+	Vector<int[]> ucs() {
 		(frontier = new PriorityQueue<>(new CostComp())).add(start);
 		(visited = new TreeSet<>(new PosComp())).add(start);
 		State best = null;
@@ -55,21 +55,21 @@ class Planner extends Agent{
 		return state2moves(best);
 	}
 
-//	public Vector<Integer[]> state2moves(State state) {
+//	public Vector<int[]> state2moves(State state) {
 //		State s = state;
-//		Vector<Integer[]> moves = new Vector<>();
+//		Vector<int[]> moves = new Vector<>();
 //		while(s != null) {
-//			moves.add(new Integer[]{s.pos[0], s.pos[1]});
+//			moves.add(new int[]{s.pos[0], s.pos[1]});
 //			s = s.parent;
 //		}
 //		return moves;
 //	}
 	
-	public Vector<Integer[]> state2moves(State state) {
+	public Vector<int[]> state2moves(State state) {
 		State s = state;
-		Vector<Integer[]> moves = new Vector<>();
+		Vector<int[]> moves = new Vector<>();
 		while(s != null) {
-			moves.add(new Integer[]{s.pos[0], s.pos[1]});
+			moves.add(new int[]{s.pos[0], s.pos[1]});
 			s = s.parent;
 		}
 		return moves;

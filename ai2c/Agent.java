@@ -8,7 +8,7 @@ import java.util.Vector;
 
 class Agent {
 	boolean newUcsFlag = false, clicked = false;
-	public Vector<Integer[]> path = new Vector<Integer[]>();
+	public Vector<int[]> path = new Vector<int[]>();
 	int[] bigGoal = new int[] {100, 100};
 	Planner plan;
 	TreeSet<State> visited;
@@ -17,55 +17,29 @@ class Agent {
 
 
 	void drawPlan(Graphics g, Model m) {
-		g.setColor(Color.red);
-		//g.drawLine((int)m.getX(), (int)m.getY(), (int)m.getDestX(), (int)m.getDestY());
+		g.setColor(Color.pink);
+		g.fillOval(97, 97, 6, 6);
 		
-		g.fillOval(95, 95, 10, 10);
 		
-		//System.out.println(m.getX() + "," + m.getY() + "      " + m.getDestX() + "," + m.getDestY());
-		
+		//draw frontier
 		g.setColor(Color.YELLOW);
 		for(State s : frontier)
 			g.fillOval(s.pos[0], s.pos[1], 10, 10);
-		if(newUcsFlag)
-			if(path.size() > 0) {
-				g.setColor(Color.white);
-//				Integer[] last = new Integer[] {(int)m.getX(), (int)m.getY()};
-				Integer[] last = new Integer[] {(int)m.getDestX(), (int)m.getDestY()};
-				for(int i = 0; i < path.size()-1; i++) {
-					//System.out.println(path.get(i)[0] + "," + path.get(i)[1]);
-					if(last == null)
-						last = new Integer[] {(int)m.getDestX(), (int)m.getDestY()};
-					g.drawLine(last[0], last[1], path.get(i)[0], path.get(i)[1]);
-					last = new Integer[] {path.get(i)[0], path.get(i)[1]};
-	//				int x1 = path.get(i)[0], y1 = path.get(i)[1];
-	//				int x2 = path.get(i+1)[0], y2 = path.get(i+1)[1];
-	//				System.out.println(x1 + "," + y1 + " " + x2 + "," + y2);
-	//				g.drawLine(x1, y1, x2, y2);
-				}
+		
+		
+		//draw path
+		if(!path.isEmpty()) {
+			g.setColor(Color.white);
+			int[] last = bigGoal;
+			for(int i = 0; i < path.size(); i++) {
+				if(last == null)
+					last = new int[] {(int)m.getDestX(), (int)m.getDestY()};
+				g.drawLine(last[0], last[1], path.get(i)[0], path.get(i)[1]);
+				last = new int[] {path.get(i)[0], path.get(i)[1]};
 			}
-		
-		
-		
-//		if(newUcsFlag) {
-//			System.out.println(frontier.size());
-//			g.setColor(Color.yellow);
-//			
-//			g.setColor(Color.RED);
-//			for(Integer[] iArr: path)
-//				g.fillOval(iArr[0], iArr[1], 4, 4);
-//			drawPath(g, m);
-//			newUcsFlag = false;
-//		}
-	}
-
-	public void drawPath(Graphics g, Model m) {
-		g.setColor(Color.green);
-		for(int i = 0; i < path.size()-1; i++) {
-			int x1 = path.get(i)[0], y1 = path.get(i)[1];
-			int x2 = path.get(i+1)[0], y2 = path.get(i+1)[1];
-			//System.out.println(x1 + "," + y1 + " " + x2 + "," + y2);
-			g.drawLine(x1, y1, x2, y2);
+			if(path.size() > 1)
+				m.setDest(path.get(path.size()-2)[0], path.get(path.size()-2)[1]);
+			path.removeElementAt(path.size()-1);
 		}
 	}
 
@@ -84,7 +58,7 @@ class Agent {
 				newUcsFlag = true;
 			else
 				System.out.println("returned path empty");
-			//m.setDest(e.getX(), e.getY());
+			bigGoal = new int[] {e.getX(), e.getY()};
 
 		}
 	}
