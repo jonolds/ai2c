@@ -22,15 +22,14 @@ class Planner extends Agent{
 		(visited = new TreeSet<>(new PosComp())).add(start);
 		State best = null;
 
-		//
 		while(!frontier.isEmpty()) {
-
 			State s = frontier.poll();
-			print(s.pos); System.out.print("    "); print(goal.pos);
-			if(new PosComp().compare(s, goal) == 0) {
-				if(best == null || best.cost > s.cost)
-					best = s;
+			//print(s.pos); System.out.print("    "); print(goal.pos);
+			if(new PosComp().compare(s, goal) == 0) if(best == null || best.cost > s.cost) {
+				best = s;
+				break;
 			}
+					
 			for(int i = 0; i < 16; i+=2) {
 				int[] newPos = new int[] {s.pos[0] + act[i], s.pos[1] + act[i+1]};
 				if(newPos[0] >= 0 && newPos[0] < 1200 && newPos[1] >= 0 && newPos[1] < 600) {
@@ -52,9 +51,20 @@ class Planner extends Agent{
 				}
 			}
 		}
+		System.out.println(frontier.size() + " planner front size");
 		return state2moves(best);
 	}
 
+//	public Vector<Integer[]> state2moves(State state) {
+//		State s = state;
+//		Vector<Integer[]> moves = new Vector<>();
+//		while(s != null) {
+//			moves.add(new Integer[]{s.pos[0], s.pos[1]});
+//			s = s.parent;
+//		}
+//		return moves;
+//	}
+	
 	public Vector<Integer[]> state2moves(State state) {
 		State s = state;
 		Vector<Integer[]> moves = new Vector<>();
@@ -71,7 +81,7 @@ class Planner extends Agent{
 	
 	class CostComp implements Comparator<State> {
 		public int compare(State a, State b) {
-			return -Double.compare(a.cost, b.cost);
+			return Double.compare(a.cost, b.cost);
 		}
 	}
 	

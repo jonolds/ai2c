@@ -16,7 +16,6 @@ class State {
 		this(cost, parent);
 		pos = new int[]{x, y};
 	}
-
 	State(State _parent, int[] pos) {
 		this(0.0, _parent, pos[0], pos[1]);
 	}

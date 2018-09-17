@@ -37,7 +37,7 @@ public class View extends JFrame implements ActionListener {
 		MyPanel() throws Exception {
 			image_robot = ImageIO.read(new File("robot_blue.png"));
 			redX = ImageIO.read(new File("redX.png"));
-			yelX = ImageIO.read(new File("yelX2.png"));
+			yelX = ImageIO.read(new File("yelX.png"));
 		}
 
 		void drawTerrain(Graphics g) {
