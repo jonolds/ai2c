@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 class Model {  //max horizontal/vertical screen position. min is 0
-	public static final float XMAX = 1200.0f - 0.0001f, YMAX = 600.0f - 0.0001f;
+	public static final float XMAX = 1199.9999f, YMAX = 600.0f - 0.0001f;
 
 	private Controller controller;
 	public byte[] terrain;
@@ -36,7 +36,10 @@ class Model {  //max horizontal/vertical screen position. min is 0
 	float getTravelSpeed(float x, float y) {
 		int xx = (int)(x * 0.01f);
 		int yy = (int)(y * 0.01f);
-//		if(xx >= 60) { xx = 119 - xx; yy = 59 - yy; }
+		if(xx >= 60) { 
+			xx = 119 - xx;
+			yy = 59 - yy; 
+		}
 		int pos = 4 * (11 * yy + xx);
 		float speed = Math.max(0.2f, Math.min(3.5f, -0.01f * (t2[pos + 1]) + 0.02f * (t2[pos + 3])));
 		return speed;

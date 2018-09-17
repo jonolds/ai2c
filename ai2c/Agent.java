@@ -1,22 +1,31 @@
 package ai2c;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.PriorityQueue;
-import java.util.TreeSet;
 import java.util.Vector;
+import javax.imageio.ImageIO;
 
 class Agent {
-	boolean newUcsFlag = false, clicked = false;
+	boolean clicked = false;
 	public Vector<int[]> path = new Vector<int[]>();
 	int[] bigGoal = new int[] {100, 100};
-	Planner plan;
-	TreeSet<State> visited;
+	Planner.Combo combo;
 	PriorityQueue<State> frontier = new PriorityQueue<>();
+	Image finalDest;
+	
+	Agent() throws IOException {
+		finalDest = ImageIO.read(new File("grnX.png"));
+	}
 	
 
 
 	void drawPlan(Graphics g, Model m) {
+		g.drawImage(finalDest, bigGoal[0]-8, (int)bigGoal[1] -8, null);
+		
 		g.setColor(Color.pink);
 		g.fillOval(97, 97, 6, 6);
 		
@@ -42,23 +51,22 @@ class Agent {
 		
 		if(path.size() > 1)
 			m.setDest(path.get(path.size()-2)[0], path.get(path.size()-2)[1]);
+		else if(path.size() == 1)
+			m.setDest(path.get(path.size()-1)[0], path.get(path.size()-1)[1]);
+		else
+			m.setDest(bigGoal[0], bigGoal[1]);
+			
 	}
 
-	void update(Model m) {
+	void update(Model m) throws IOException {
 		Controller c = m.getController();
 		while(true) {
 			MouseEvent e = c.nextMouseEvent();
 			if(e == null)
 				break;
-			bigGoal = new int[] {e.getX(), e.getY()};
-			plan = new Planner(m, e.getX(), e.getY());
-			path = plan.ucs();
-			visited = plan.visited;
-			frontier = plan.frontier;
-			if(!path.isEmpty())
-				newUcsFlag = true;
-			else
-				System.out.println("returned path empty");
+			combo = (new Planner(m, e.getX(), e.getY())).ucs();
+			path = combo.path;
+			frontier = combo.frontier;
 			bigGoal = new int[] {e.getX(), e.getY()};
 
 		}

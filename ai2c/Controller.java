@@ -1,6 +1,7 @@
 package ai2c;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
 import java.util.LinkedList;
 import javax.swing.Timer;
 
@@ -23,7 +24,7 @@ class Controller implements MouseListener {
 		new Timer(20, c.view).start(); //creates ActionEvent at intervals: handled by View.actionPerformed
 	}
 
-	boolean update() {
+	boolean update() throws IOException {
 		agent.update(model);
 		model.update();
 		return true;

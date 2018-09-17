@@ -1,4 +1,5 @@
 package ai2c;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.TreeSet;
@@ -11,13 +12,21 @@ class Planner extends Agent{
 	PriorityQueue<State> frontier;
 	final int[] act = new int[] {10, -10, 10, 0, 10, 10, 0, 10, 0, -10, -10, -10, -10, 0, -10, 10};
 	
-	Planner(Model m, int destX, int destY) {
+	Planner(Model m, int destX, int destY) throws IOException {
 		this.m = m;
 		this.start = new State((int)m.getX(), (int)m.getY());
 		this.goal = new State(roundTen(destX), roundTen(destY));
 	}
+	
+	public class Combo {
+		Vector<int[]> path;
+		PriorityQueue<State> frontier;
+		Combo(Vector<int[]> path, PriorityQueue<State> frontier) {
+			this.path = path; this.frontier = frontier;
+		}
+	}
 
-	Vector<int[]> ucs() {
+	Combo ucs() {
 		(frontier = new PriorityQueue<>(new CostComp())).add(start);
 		(visited = new TreeSet<>(new PosComp())).add(start);
 		State best = null;
@@ -52,7 +61,7 @@ class Planner extends Agent{
 			}
 		}
 		System.out.println(frontier.size() + " planner front size");
-		return state2moves(best);
+		return new Combo(state2moves(best), frontier);
 	}
 
 //	public Vector<int[]> state2moves(State state) {
